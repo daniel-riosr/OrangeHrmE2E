@@ -1,0 +1,52 @@
+package co.com.udea.certificacion.taller.orangehrm.stepdefinitions;
+
+import co.com.udea.certificacion.taller.orangehrm.tasks.OpenTheBrowser;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.Given;
+import net.serenitybdd.annotations.Managed;
+import net.serenitybdd.screenplay.Actor;
+import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
+import org.openqa.selenium.WebDriver;
+import co.com.udea.certificacion.taller.orangehrm.models.User;
+import co.com.udea.certificacion.taller.orangehrm.questions.DashboardValidation;
+import co.com.udea.certificacion.taller.orangehrm.tasks.LogIn;
+import io.cucumber.java.DataTableType;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import java.util.List;
+import java.util.Map;
+
+import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+
+public class OrangeHrmStepDefinition {
+
+    @Managed(driver = "chrome")
+    WebDriver herBrowser;
+
+    private final Actor administrator = Actor.named("Laura");
+
+    @Before
+    public void setUp() {
+        administrator.can(BrowseTheWeb.with(herBrowser));
+    }
+
+    @Given("that the administrator is on the OrangeHRM login page")
+    public void thatTheAdministratorIsOnTheOrangeHrmLoginPage() {
+        administrator.wasAbleTo(OpenTheBrowser.onTheLoginPage());
+    }
+
+    @DataTableType
+    public User userEntry(Map<String, String> entry) {
+        return new User(entry.get("username"), entry.get("password"));
+    }
+
+    @When("she logs in with her credentials")
+    public void sheLogsInWithHerCredentials(List<User> users) {
+        administrator.attemptsTo(LogIn.withTheCredentialsOf(users.get(0)));
+    }
+
+    @Then("she should see the dashboard")
+    public void sheShouldSeeTheDashboard() {
+        administrator.should(seeThat(DashboardValidation.isDisplayed()));
+    }
+}

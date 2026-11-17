@@ -1,0 +1,16 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Resultados y reportes de Serenity (se regeneran al ejecutar)
+target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# Sistema operativo
+Thumbs.db
+.DS_Store
