@@ -17,6 +17,8 @@ import co.com.udea.certificacion.taller.orangehrm.tasks.LogIn;
 import co.com.udea.certificacion.taller.orangehrm.questions.LoginAlertMessage;
 import co.com.udea.certificacion.taller.orangehrm.questions.RequiredFieldMessage;
 import co.com.udea.certificacion.taller.orangehrm.tasks.LogOut;
+import co.com.udea.certificacion.taller.orangehrm.questions.EmployeeFormErrorMessage;
+import co.com.udea.certificacion.taller.orangehrm.tasks.TryToCreateEmployee;
 import co.com.udea.certificacion.taller.orangehrm.tasks.TryToLogIn;
 import co.com.udea.certificacion.taller.orangehrm.utils.UniqueData;
 import io.cucumber.java.DataTableType;
@@ -24,6 +26,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static org.hamcrest.Matchers.allOf;
@@ -95,6 +98,31 @@ public class OrangeHrmStepDefinition {
     public void sheCreatesANewEmployeeWithTheFollowingInformation(List<Employee> employees) {
         newEmployee = employees.get(0);
         administrator.attemptsTo(CreateEmployee.withTheInformationOf(newEmployee));
+    }
+
+    @When("she tries to create a new employee with the following information")
+    public void sheTriesToCreateANewEmployeeWithTheFollowingInformation(List<Map<String, String>> entries) {
+        // Datos tal cual vienen del feature (sin sufijo unico): el caso de excepcion los necesita exactos
+        Map<String, String> entry = entries.get(0);
+        Employee invalidEmployee = new Employee(
+                Objects.toString(entry.get("firstName"), ""),
+                Objects.toString(entry.get("middleName"), ""),
+                Objects.toString(entry.get("lastName"), ""),
+                UniqueData.employeeId(),
+                Objects.toString(entry.get("username"), ""),
+                Objects.toString(entry.get("password"), ""));
+        administrator.attemptsTo(TryToCreateEmployee.withTheInformationOf(invalidEmployee));
+    }
+
+    @Then("she should see the employee form error message {string}")
+    public void sheShouldSeeTheEmployeeFormErrorMessage(String expectedMessage) {
+        administrator.should(seeThat(EmployeeFormErrorMessage.text(), equalTo(expectedMessage)));
+    }
+
+    @When("she logs in as the new employee with the password {string}")
+    public void sheLogsInAsTheNewEmployeeWithThePassword(String wrongPassword) {
+        administrator.attemptsTo(LogIn.withTheCredentialsOf(
+                new User(newEmployee.getUsername(), wrongPassword)));
     }
 
     @When("she logs out")
