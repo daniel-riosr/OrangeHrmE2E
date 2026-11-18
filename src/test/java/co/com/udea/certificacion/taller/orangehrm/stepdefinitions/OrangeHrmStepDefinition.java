@@ -10,6 +10,9 @@ import org.openqa.selenium.WebDriver;
 import co.com.udea.certificacion.taller.orangehrm.models.User;
 import co.com.udea.certificacion.taller.orangehrm.questions.DashboardValidation;
 import co.com.udea.certificacion.taller.orangehrm.tasks.LogIn;
+import co.com.udea.certificacion.taller.orangehrm.questions.LoginAlertMessage;
+import co.com.udea.certificacion.taller.orangehrm.questions.RequiredFieldMessage;
+import co.com.udea.certificacion.taller.orangehrm.tasks.TryToLogIn;
 import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class OrangeHrmStepDefinition {
 
@@ -48,5 +52,20 @@ public class OrangeHrmStepDefinition {
     @Then("she should see the dashboard")
     public void sheShouldSeeTheDashboard() {
         administrator.should(seeThat(DashboardValidation.isDisplayed()));
+    }
+
+    @When("she tries to log in without entering her credentials")
+    public void sheTriesToLogInWithoutEnteringHerCredentials() {
+        administrator.attemptsTo(TryToLogIn.withoutCredentials());
+    }
+
+    @Then("she should see the alert message {string}")
+    public void sheShouldSeeTheAlertMessage(String expectedMessage) {
+        administrator.should(seeThat(LoginAlertMessage.text(), equalTo(expectedMessage)));
+    }
+
+    @Then("she should see the required field message {string}")
+    public void sheShouldSeeTheRequiredFieldMessage(String expectedMessage) {
+        administrator.should(seeThat(RequiredFieldMessage.text(), equalTo(expectedMessage)));
     }
 }

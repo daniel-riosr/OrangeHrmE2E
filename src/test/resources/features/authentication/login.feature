@@ -11,3 +11,18 @@ Feature: Login to the OrangeHRM system
       | username | password |
       | Admin    | admin123 |
     Then she should see the dashboard
+
+  Scenario Outline: Login fails with invalid credentials
+    When she logs in with her credentials
+      | username   | password   |
+      | <username> | <password> |
+    Then she should see the alert message "<message>"
+
+    Examples:
+      | username        | password | message             |
+      | Admin           | wrong123 | Invalid credentials |
+      | nonexistentUser | admin123 | Invalid credentials |
+
+  Scenario: Login fails when the fields are empty
+    When she tries to log in without entering her credentials
+    Then she should see the required field message "Required"
