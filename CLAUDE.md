@@ -70,3 +70,15 @@
 14. **Pulir**: semillas sobrantes, nombres, constantes, README del repositorio.
 15. **Tabla FIRST** del proyecto para la exposición.
 16. Apoyo para preparar la socialización (guion, preguntas probables).
+
+## Decisiones acordadas (pendientes)
+1. Regla de capas del profe: las Tasks solo llaman Interactions con nombre de negocio. Toda la "menuda" (Click, Enter, WaitUntil y WaitLittleBitTime) va en Interactions, como el Authenticate del profe. Aplica a GoToAddEmployee, CreateEmployee, LogOut, TryToLogIn, TryToCreateEmployee y cualquier otra Task.
+2. Quitar el paso imperativo "she goes to the Add Employee form": la navegación va dentro de "registrar un empleado".
+3. Estructura de features: smoke/ (abrir la app), authentication/ (login feliz + errores), employee/ (crear empleado feliz + errores), e2e/employee_onboarding.feature (el admin crea un empleado con acceso → el empleado entra). Runners espejo de esa estructura.
+4. Nombres claros: la actora "Laura" es la única Laura. Los empleados se llaman distinto (ej. Sofia Ramirez, Carlos Perez).
+5. Escenarios declarativos y cortos: un When y un Then por escenario. La preparación va en Given/Background.
+6. (Opcional) Segundo actor: en el E2E, Carlos (el empleado nuevo) es quien inicia sesión.
+7. Errores del E2E: empleado sin First Name → "Required"; claves que no coinciden → "Passwords do not match".
+8. Limpieza: eliminar el empleado creado al final (FIRST "R").
+9. README del repositorio + tabla FIRST + apoyo para la exposición.
+10. Revisión final de simplicidad: cada clase se explica en una frase.
