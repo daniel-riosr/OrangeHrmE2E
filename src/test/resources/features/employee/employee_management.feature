@@ -19,7 +19,7 @@ Feature: Employee management in OrangeHRM
     When she tries to register a new employee with the following information
       | firstName   | middleName   | lastName   | username   | password   |
       | <firstName> | <middleName> | <lastName> | <username> | <password> |
-    Then she should see the employee form error message "<message>"
+    Then she should see the field error message "<message>"
 
     Examples:
       | firstName | middleName | lastName | username       | password | message                           |

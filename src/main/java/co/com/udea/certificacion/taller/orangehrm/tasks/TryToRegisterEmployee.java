@@ -3,6 +3,7 @@ package co.com.udea.certificacion.taller.orangehrm.tasks;
 import co.com.udea.certificacion.taller.orangehrm.interactions.FillEmployeeForm;
 import co.com.udea.certificacion.taller.orangehrm.interactions.FillLoginDetails;
 import co.com.udea.certificacion.taller.orangehrm.interactions.OpenTheAddEmployeeForm;
+import co.com.udea.certificacion.taller.orangehrm.interactions.ReplaceTheEmployeeId;
 import co.com.udea.certificacion.taller.orangehrm.interactions.SaveTheEmployee;
 import co.com.udea.certificacion.taller.orangehrm.models.Employee;
 import net.serenitybdd.screenplay.Actor;
@@ -26,6 +27,7 @@ public class TryToRegisterEmployee implements Task {
         actor.attemptsTo(
                 OpenTheAddEmployeeForm.fromThePimMenu(),
                 FillEmployeeForm.with(employee),
+                ReplaceTheEmployeeId.with(employee),
                 FillLoginDetails.with(employee),
                 SaveTheEmployee.information());
     }

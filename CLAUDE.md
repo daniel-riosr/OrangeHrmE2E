@@ -35,50 +35,55 @@
 | Features | `src/test/resources/features/<carpeta>/*.feature` | Gherkin **en inglés** (el profe lo pidió: evitar tildes/ñ). Historia de usuario `As a / I need / To`. Usar `Background` para el Given común. Datos en DataTable o `Scenario Outline` + `Examples`. |
 | Runners | `src/test/java/.../runners/<carpeta>/` | `features` = ruta exacta del feature; `glue` = `co.com.udea.certificacion.taller.orangehrm.stepdefinitions`. |
 | StepDefinitions | `src/test/java/.../stepdefinitions/` | Solo traduce Gherkin → actor. Sin lógica ni localizadores. Actor `Actor.named("Laura")` + `@Managed(driver = "chrome") WebDriver herBrowser` (SIN `uniqueSession = true`, para que cada escenario tenga navegador limpio → FIRST "I"). `@Before` → `administrator.can(BrowseTheWeb.with(herBrowser))`. Given → `wasAbleTo`, When → `attemptsTo`, Then → `should(seeThat(...))`. Usar `@DataTableType` para convertir tablas en Models. |
-| Tasks | `src/main/java/.../tasks/` | Acciones de **negocio** (qué se hace). `implements Task`. Método estático de lectura natural que retorna `Tasks.instrumented(Clase.class, args...)`. Llaman a Interactions. |
+| Tasks | `src/main/java/.../tasks/` | Acciones de **negocio** (qué se hace). `implements Task`. Método estático de lectura natural que retorna `Tasks.instrumented(Clase.class, args...)`. **Solo llaman Interactions**: nada de `Click`, `Enter`, `Open`, `WaitUntil` ni `WaitLittleBitTime` dentro de una Task. |
 | Interactions | `src/main/java/.../interactions/` | Acciones sobre la **pantalla** (cómo: escribir, clic, seleccionar). `implements Interaction`. Reciben Models por constructor. |
-| Questions | `src/main/java/.../questions/` | Verificaciones. `implements Question<Boolean>` o `Question<String>`. Método estático que retorna `new Clase()` (NO `instrumented`). Usar `TARGET.resolveFor(actor).waitUntilVisible().getText()`. El profe pidió hacerlas de **varias maneras**: Boolean con `seeThat(q)` y String con `seeThat(q, equalTo(...))`. |
+| Questions | `src/main/java/.../questions/` | Verificaciones. `implements Question<Boolean>` o `Question<String>`. Método estático que retorna `new Clase()` (NO `instrumented`). Usar `TARGET.resolveFor(actor).waitUntilVisible().getText()` (salvo `EmployeeProfileName`, porque `RegisterEmployee` ya esperó el nombre con `WaitForTheProfileOf`). El profe pidió hacerlas de **varias maneras**: Boolean con `seeThat(q)` y String con `seeThat(q, equalTo(...))`. |
 | UserInterfaces | `src/main/java/.../userinterfaces/` | Solo mapeo de elementos: `public static final Target NOMBRE = Target.the("descripción legible").located(By....)`. Constantes en MAYÚSCULAS. Constructor privado. Mostrar variedad de localizadores (XPath, name, CSS). |
 | Models | `src/main/java/.../models/` | Datos de prueba. Lombok `@Getter @AllArgsConstructor` (aprobado por el profe). |
-| Utils | `src/main/java/.../utils/` | `WaitLittleBitTime.waitLittleBitTime()` lee `demo.pause.milliseconds` de `serenity.conf` (2000 para exponer, 0 para trabajar). Llamarla entre interacciones. Clases utilitarias `final` con constructor privado. |
+| Utils | `src/main/java/.../utils/` | `WaitLittleBitTime.waitLittleBitTime()` lee `demo.pause.milliseconds` de `serenity.conf` (2000 para exponer, 0 para trabajar). Llamarla entre interacciones. `MaximumWaitTime.inSeconds()` lee `webdriver.wait.for.timeout`. `UniqueData` genera Employee Id y empleados únicos con fecha y hora. `EmployeeCredentials` convierte un `Employee` en `User`. Clases utilitarias `final` con constructor privado. |
 
 ## Reglas de calidad (el profe las evalúa)
 - **Nada "quemado"**: textos esperados y nombres de propiedades en constantes; datos de prueba en el feature; URL en `serenity.conf` (`pages.orangeHrmUrl`).
 - **Responsabilidad única** y nombres en inglés que se lean como frase (`LogIn.withTheCredentialsOf(user)`).
 - Las Tasks hablan de negocio; las Interactions de la pantalla. No mezclar.
 - Nada de `Thread.sleep` fuera de `WaitLittleBitTime`. Para estabilidad usar esperas de Serenity (`waitUntilVisible`, `WaitUntil`) — `webdriver.wait.for.timeout = 15000` ya está en `serenity.conf`.
+- `WaitUntil` siempre como `.forNoMoreThan(MaximumWaitTime.inSeconds()).seconds()`. En Serenity 4.1.0, `forNoMoreThan(Duration)` revisa la condición **una sola vez**, y `WaitUntil` sin tiempo espera solo 2 s.
+- El demo de OrangeHRM es **compartido**: el Employee Id automático puede repetirse ("Employee Id already exists"). Por eso `ReplaceTheEmployeeId` escribe uno único.
 - **FIRST**: escenarios independientes (cada uno inicia desde el login por `Background`), repetibles (datos únicos con timestamp; limpiar lo que se crea), autovalidables (todo escenario termina en un `Then` con Question).
 - Borrar las clases "semilla" del scaffold cuando se reemplazan.
 - Si un localizador falla, NO adivinar: pedir al usuario que lo verifique con el inspector de Chrome (`Ctrl+F` en Elements debe dar "1 of 1") y que pegue el HTML del elemento. OrangeHRM es una SPA (Vue): el HTML no se puede obtener con una petición simple.
 
 ## Ya implementado
-- `serenity.conf` (Chrome, `wait.for.timeout`, `take.screenshots = FOR_EACH_ACTION`, `pages.orangeHrmUrl`, `demo.pause.milliseconds`).
-- Smoke: `features/smoke/open_orangehrm.feature`, `OrangeHrmRunner`, Task `OpenTheBrowser`.
-- Login exitoso: `features/authentication/login.feature`, `LoginRunner`, `OrangeHrmStepDefinition`, Model `User`, Task `LogIn`, Interaction `Authenticate`, UserInterfaces `LoginPage` y `DashboardPage`, Question `DashboardValidation`, Util `WaitLittleBitTime`.
+- `serenity.conf`: Chrome, `wait.for.timeout`, `take.screenshots = FOR_EACH_ACTION`, `pages.orangeHrmUrl`, `demo.pause.milliseconds`.
 - Reporte Serenity funcionando. Verificar que `build.gradle` tenga al final:
   ```groovy
   tasks.named('aggregate') { outputs.upToDateWhen { false } }
   ```
+- **Features y runners espejo (12 escenarios):**
+  - `authentication/login.feature` → `LoginRunner`: login exitoso; `Scenario Outline` con clave incorrecta y usuario inexistente ("Invalid credentials"); campos vacíos ("Required").
+  - `employee/employee_management.feature` → `EmployeeManagementRunner`: registro exitoso de Sofia Ramirez; `Scenario Outline` con 5 errores (sin First Name, sin Last Name, usuario existente, usuario corto, clave corta). Celdas vacías con `[blank]`.
+  - `e2e/employee_onboarding.feature` → `EmployeeOnboardingRunner`: Laura registra a Carlos Perez con acceso y cierra sesión; Carlos (segundo actor, mismo navegador) entra al Dashboard, o ve "Invalid credentials" con una clave incorrecta.
+- **Tasks:** `OpenTheBrowser`, `LogIn`, `TryToLogIn`, `LogOut`, `RegisterEmployee`, `TryToRegisterEmployee`.
+- **Interactions:** `Authenticate`, `SubmitTheLoginForm`, `LoadTheLoginPage`, `EndTheSession`, `OpenTheAddEmployeeForm`, `FillEmployeeForm`, `ReplaceTheEmployeeId`, `FillLoginDetails`, `SaveTheEmployee`, `WaitForTheProfileOf`.
+- **Questions:** `DashboardValidation` (Boolean), `LoginAlertMessage`, `FieldErrorMessage` y `EmployeeProfileName` (String).
+- **UserInterfaces:** `LoginPage`, `DashboardPage`, `MenuPage`, `UserMenuPage`, `AddEmployeePage`, `EmployeeDetailsPage`, `FormPage`.
+- **Models:** `User`, `Employee`. **Utils:** `WaitLittleBitTime`, `MaximumWaitTime`, `UniqueData`, `EmployeeCredentials`.
+- `README.md` con ejecución, capas, escenarios, decisiones técnicas y tabla FIRST.
 
-## Pendiente (en este orden)
-8. **Errores del login** con `Scenario Outline` + `Examples`: clave incorrecta y usuario inexistente → "Invalid credentials"; campos vacíos → "Required". Question que retorna `String` validada con `equalTo` (la "otra manera").
-9. **E2E parte 1**: menú PIM → Add Employee → Model `Employee` (nombre único con timestamp) → Save → verificar el perfil del empleado.
-10. **E2E parte 2**: Employee List → buscar el empleado creado → verificar que aparece en resultados.
-11. **Error del E2E**: guardar empleado sin First Name → "Required".
-12. **Limpieza**: eliminar el empleado creado y hacer logout (FIRST "R").
-13. **Runner general** de todos los features + reporte final con `.\gradlew clean test`.
-14. **Pulir**: semillas sobrantes, nombres, constantes, README del repositorio.
-15. **Tabla FIRST** del proyecto para la exposición.
-16. Apoyo para preparar la socialización (guion, preguntas probables).
+## Pendiente
+1. **"Passwords do not match"** como error del registro (decisión 7).
+2. **Limpieza**: eliminar el empleado creado al final (FIRST "R", decisión 8).
+3. **Por decidir**: buscar el empleado en *Employee List* y verificar que aparece (antiguo pendiente 10).
+4. Apoyo para la socialización: guion y preguntas probables (decisión 9).
 
-## Decisiones acordadas (pendientes)
-1. Regla de capas del profe: las Tasks solo llaman Interactions con nombre de negocio. Toda la "menuda" (Click, Enter, WaitUntil y WaitLittleBitTime) va en Interactions, como el Authenticate del profe. Aplica a GoToAddEmployee, CreateEmployee, LogOut, TryToLogIn, TryToCreateEmployee y cualquier otra Task.
-2. Quitar el paso imperativo "she goes to the Add Employee form": la navegación va dentro de "registrar un empleado".
-3. Estructura de features: smoke/ (abrir la app), authentication/ (login feliz + errores), employee/ (crear empleado feliz + errores), e2e/employee_onboarding.feature (el admin crea un empleado con acceso → el empleado entra). Runners espejo de esa estructura.
-4. Nombres claros: la actora "Laura" es la única Laura. Los empleados se llaman distinto (ej. Sofia Ramirez, Carlos Perez).
-5. Escenarios declarativos y cortos: un When y un Then por escenario. La preparación va en Given/Background.
-6. (Opcional) Segundo actor: en el E2E, Carlos (el empleado nuevo) es quien inicia sesión.
-7. Errores del E2E: empleado sin First Name → "Required"; claves que no coinciden → "Passwords do not match".
-8. Limpieza: eliminar el empleado creado al final (FIRST "R").
-9. README del repositorio + tabla FIRST + apoyo para la exposición.
-10. Revisión final de simplicidad: cada clase se explica en una frase.
+## Decisiones acordadas
+1. ✅ Regla de capas del profe: las Tasks solo llaman Interactions con nombre de negocio. Toda la "menuda" (Click, Enter, WaitUntil y WaitLittleBitTime) va en Interactions, como el Authenticate del profe.
+2. ✅ Quitar el paso imperativo "she goes to the Add Employee form": la navegación va dentro de "registrar un empleado".
+3. ✅ Estructura de features: authentication/ (login feliz + errores), employee/ (registrar empleado feliz + errores), e2e/employee_onboarding.feature (el admin registra un empleado con acceso → el empleado entra). Runners espejo. Se eliminó smoke/ porque no tenía Then y login.feature ya cubre abrir la página.
+4. ✅ Nombres claros: la actora "Laura" es la única Laura. Los empleados son Sofia Ramirez y Carlos Perez.
+5. ✅ Escenarios declarativos y cortos: un When y un Then por escenario. La preparación va en Given/Background.
+6. ✅ Segundo actor: en el E2E, Carlos (el empleado nuevo) es quien inicia sesión.
+7. ⏳ Errores del E2E: empleado sin First Name → "Required" ✅; claves que no coinciden → "Passwords do not match" (pendiente).
+8. ⏳ Limpieza: eliminar el empleado creado al final (FIRST "R").
+9. ⏳ README del repositorio ✅ + tabla FIRST ✅ + apoyo para la exposición (pendiente).
+10. ✅ Revisión final de simplicidad: cada clase se explica en una frase.

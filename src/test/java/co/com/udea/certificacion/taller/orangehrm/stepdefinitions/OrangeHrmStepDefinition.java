@@ -3,10 +3,9 @@ package co.com.udea.certificacion.taller.orangehrm.stepdefinitions;
 import co.com.udea.certificacion.taller.orangehrm.models.Employee;
 import co.com.udea.certificacion.taller.orangehrm.models.User;
 import co.com.udea.certificacion.taller.orangehrm.questions.DashboardValidation;
-import co.com.udea.certificacion.taller.orangehrm.questions.EmployeeCreation;
-import co.com.udea.certificacion.taller.orangehrm.questions.EmployeeFormErrorMessage;
+import co.com.udea.certificacion.taller.orangehrm.questions.EmployeeProfileName;
+import co.com.udea.certificacion.taller.orangehrm.questions.FieldErrorMessage;
 import co.com.udea.certificacion.taller.orangehrm.questions.LoginAlertMessage;
-import co.com.udea.certificacion.taller.orangehrm.questions.RequiredFieldMessage;
 import co.com.udea.certificacion.taller.orangehrm.tasks.LogIn;
 import co.com.udea.certificacion.taller.orangehrm.tasks.LogOut;
 import co.com.udea.certificacion.taller.orangehrm.tasks.OpenTheBrowser;
@@ -85,9 +84,9 @@ public class OrangeHrmStepDefinition {
         administrator.should(seeThat(LoginAlertMessage.text(), equalTo(expectedMessage)));
     }
 
-    @Then("she should see the required field message {string}")
-    public void sheShouldSeeTheRequiredFieldMessage(String expectedMessage) {
-        administrator.should(seeThat(RequiredFieldMessage.text(), equalTo(expectedMessage)));
+    @Then("she should see the field error message {string}")
+    public void sheShouldSeeTheFieldErrorMessage(String expectedMessage) {
+        administrator.should(seeThat(FieldErrorMessage.text(), equalTo(expectedMessage)));
     }
 
     @When("she registers a new employee with the following information")
@@ -98,7 +97,7 @@ public class OrangeHrmStepDefinition {
 
     @Then("she should see the personal details of the new employee")
     public void sheShouldSeeThePersonalDetailsOfTheNewEmployee() {
-        administrator.should(seeThat(EmployeeCreation.fullNameDisplayed(),
+        administrator.should(seeThat(EmployeeProfileName.displayed(),
                 allOf(containsString(newEmployee.getFirstName()),
                         containsString(newEmployee.getLastName()))));
     }
@@ -106,11 +105,6 @@ public class OrangeHrmStepDefinition {
     @When("she tries to register a new employee with the following information")
     public void sheTriesToRegisterANewEmployeeWithTheFollowingInformation(List<Employee> employees) {
         administrator.attemptsTo(TryToRegisterEmployee.withTheInformationOf(employees.get(0)));
-    }
-
-    @Then("she should see the employee form error message {string}")
-    public void sheShouldSeeTheEmployeeFormErrorMessage(String expectedMessage) {
-        administrator.should(seeThat(EmployeeFormErrorMessage.text(), equalTo(expectedMessage)));
     }
 
     @Given("she has registered a new employee with system access")

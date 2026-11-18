@@ -13,8 +13,6 @@ public class LoginPage {
             .located(By.xpath("//button[@type='submit']"));
     public static final Target INVALID_CREDENTIALS_ALERT = Target.the("invalid credentials alert")
             .located(By.xpath("//p[contains(@class,'oxd-alert-content-text')]"));
-    public static final Target REQUIRED_FIELD_MESSAGE = Target.the("required field message")
-            .located(By.xpath("//span[contains(@class,'oxd-input-field-error-message')]"));
 
     private LoginPage() {
     }
