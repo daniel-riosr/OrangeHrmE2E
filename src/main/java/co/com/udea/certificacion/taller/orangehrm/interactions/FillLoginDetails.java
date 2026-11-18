@@ -8,7 +8,10 @@ import net.serenitybdd.screenplay.Tasks;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Enter;
 
-import static co.com.udea.certificacion.taller.orangehrm.userinterfaces.AddEmployeePage.*;
+import static co.com.udea.certificacion.taller.orangehrm.userinterfaces.AddEmployeePage.CREATE_LOGIN_TOGGLE;
+import static co.com.udea.certificacion.taller.orangehrm.userinterfaces.AddEmployeePage.EMPLOYEE_CONFIRM_PASSWORD_INPUT;
+import static co.com.udea.certificacion.taller.orangehrm.userinterfaces.AddEmployeePage.EMPLOYEE_PASSWORD_INPUT;
+import static co.com.udea.certificacion.taller.orangehrm.userinterfaces.AddEmployeePage.EMPLOYEE_USERNAME_INPUT;
 
 public class FillLoginDetails implements Interaction {
 
@@ -22,11 +25,11 @@ public class FillLoginDetails implements Interaction {
     public <T extends Actor> void performAs(T actor) {
         actor.attemptsTo(Click.on(CREATE_LOGIN_TOGGLE));
         WaitLittleBitTime.waitLittleBitTime();
-        actor.attemptsTo(Enter.theValue(employee.getUsername()).into(USERNAME_INPUT));
+        actor.attemptsTo(Enter.theValue(employee.getUsername()).into(EMPLOYEE_USERNAME_INPUT));
         WaitLittleBitTime.waitLittleBitTime();
-        actor.attemptsTo(Enter.theValue(employee.getPassword()).into(PASSWORD_INPUT));
+        actor.attemptsTo(Enter.theValue(employee.getPassword()).into(EMPLOYEE_PASSWORD_INPUT));
         WaitLittleBitTime.waitLittleBitTime();
-        actor.attemptsTo(Enter.theValue(employee.getPassword()).into(CONFIRM_PASSWORD_INPUT));
+        actor.attemptsTo(Enter.theValue(employee.getPassword()).into(EMPLOYEE_CONFIRM_PASSWORD_INPUT));
         WaitLittleBitTime.waitLittleBitTime();
     }
 

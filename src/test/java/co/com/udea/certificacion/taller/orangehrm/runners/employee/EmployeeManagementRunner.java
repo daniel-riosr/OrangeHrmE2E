@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 
 @RunWith(CucumberWithSerenity.class)
 @CucumberOptions(
-        features = "src/test/resources/features/employee/create_employee.feature",
+        features = "src/test/resources/features/employee/employee_management.feature",
         glue = "co.com.udea.certificacion.taller.orangehrm.stepdefinitions",
         snippets = CucumberOptions.SnippetType.CAMELCASE
 )
-public class CreateEmployeeRunner {}
+public class EmployeeManagementRunner {}

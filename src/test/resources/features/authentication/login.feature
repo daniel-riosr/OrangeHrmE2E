@@ -25,4 +25,4 @@ Feature: Login to the OrangeHRM system
 
   Scenario: Login fails when the fields are empty
     When she tries to log in without entering her credentials
-    Then she should see the required field message "Required"
+    Then she should see the field error message "Required"

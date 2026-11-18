@@ -5,14 +5,14 @@ import net.serenitybdd.screenplay.Question;
 
 import static co.com.udea.certificacion.taller.orangehrm.userinterfaces.EmployeeDetailsPage.EMPLOYEE_FULL_NAME;
 
-public class EmployeeCreation implements Question<String> {
+public class EmployeeProfileName implements Question<String> {
 
     @Override
     public String answeredBy(Actor actor) {
         return EMPLOYEE_FULL_NAME.resolveFor(actor).getText().trim();
     }
 
-    public static EmployeeCreation fullNameDisplayed() {
-        return new EmployeeCreation();
+    public static EmployeeProfileName displayed() {
+        return new EmployeeProfileName();
     }
 }
