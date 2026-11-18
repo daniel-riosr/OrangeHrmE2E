@@ -8,6 +8,7 @@ import net.serenitybdd.screenplay.Interaction;
 import net.serenitybdd.screenplay.Tasks;
 import net.serenitybdd.screenplay.actions.Enter;
 import net.serenitybdd.screenplay.actions.SendKeys;
+import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.Keys;
 
 import static co.com.udea.certificacion.taller.orangehrm.userinterfaces.AddEmployeePage.*;
@@ -22,13 +23,18 @@ public class FillEmployeeForm implements Interaction {
 
     @Override
     public <T extends Actor> void performAs(T actor) {
-        actor.attemptsTo(Enter.theValue(employee.getFirstName()).into(FIRST_NAME_INPUT));
-        WaitLittleBitTime.waitLittleBitTime();
-        actor.attemptsTo(Enter.theValue(employee.getMiddleName()).into(MIDDLE_NAME_INPUT));
-        WaitLittleBitTime.waitLittleBitTime();
-        actor.attemptsTo(Enter.theValue(employee.getLastName()).into(LAST_NAME_INPUT));
-        WaitLittleBitTime.waitLittleBitTime();
+        enterIfNotBlank(actor, employee.getFirstName(), FIRST_NAME_INPUT);
+        enterIfNotBlank(actor, employee.getMiddleName(), MIDDLE_NAME_INPUT);
+        enterIfNotBlank(actor, employee.getLastName(), LAST_NAME_INPUT);
         replaceTheEmployeeId(actor);
+        WaitLittleBitTime.waitLittleBitTime();
+    }
+
+    // Un campo vacio en el feature significa "dejar el campo sin llenar" (caso de excepcion)
+    private <T extends Actor> void enterIfNotBlank(T actor, String value, Target field) {
+        if (value != null && !value.isBlank()) {
+            actor.attemptsTo(Enter.theValue(value).into(field));
+        }
         WaitLittleBitTime.waitLittleBitTime();
     }
 

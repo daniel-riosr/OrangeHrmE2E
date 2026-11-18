@@ -17,3 +17,12 @@ Feature: Login with a newly created employee
     When she logs out
     And she logs in with the credentials of the new employee
     Then she should see the dashboard
+
+  Scenario: Login fails with a wrong password for a newly created employee
+    Given she is on the Add Employee form
+    And she creates a new employee with the following information
+      | firstName | middleName | lastName | username | password  |
+      | Carlos    | Andres     | Perez    | carlosp  | Carlos123 |
+    When she logs out
+    And she logs in as the new employee with the password "Wrong123"
+    Then she should see the alert message "Invalid credentials"

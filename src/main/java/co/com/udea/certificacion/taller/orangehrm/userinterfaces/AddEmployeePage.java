@@ -27,6 +27,8 @@ public class AddEmployeePage {
                     + "/ancestor::div[contains(@class,'oxd-input-group')]//input"));
     public static final Target SAVE_BUTTON = Target.the("save button")
             .located(By.xpath("//button[@type='submit']"));
+    public static final Target FIELD_ERROR_MESSAGE = Target.the("field error message")
+            .located(By.cssSelector(".oxd-input-field-error-message"));
 
     private AddEmployeePage() {
     }
