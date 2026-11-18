@@ -1,22 +1,15 @@
 package co.com.udea.certificacion.taller.orangehrm.tasks;
 
-import co.com.udea.certificacion.taller.orangehrm.utils.WaitLittleBitTime;
+import co.com.udea.certificacion.taller.orangehrm.interactions.OpenTheAddEmployeeForm;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.Tasks;
-import net.serenitybdd.screenplay.actions.Click;
-
-import static co.com.udea.certificacion.taller.orangehrm.userinterfaces.MenuPage.ADD_EMPLOYEE_TAB;
-import static co.com.udea.certificacion.taller.orangehrm.userinterfaces.MenuPage.PIM_MENU;
 
 public class GoToAddEmployee implements Task {
 
     @Override
     public <T extends Actor> void performAs(T actor) {
-        actor.attemptsTo(Click.on(PIM_MENU));
-        WaitLittleBitTime.waitLittleBitTime();
-        actor.attemptsTo(Click.on(ADD_EMPLOYEE_TAB));
-        WaitLittleBitTime.waitLittleBitTime();
+        actor.attemptsTo(OpenTheAddEmployeeForm.fromThePimMenu());
     }
 
     public static GoToAddEmployee form() {

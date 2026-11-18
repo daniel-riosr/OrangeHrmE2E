@@ -2,14 +2,11 @@ package co.com.udea.certificacion.taller.orangehrm.tasks;
 
 import co.com.udea.certificacion.taller.orangehrm.interactions.FillEmployeeForm;
 import co.com.udea.certificacion.taller.orangehrm.interactions.FillLoginDetails;
+import co.com.udea.certificacion.taller.orangehrm.interactions.SaveTheEmployee;
 import co.com.udea.certificacion.taller.orangehrm.models.Employee;
-import co.com.udea.certificacion.taller.orangehrm.utils.WaitLittleBitTime;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.Tasks;
-import net.serenitybdd.screenplay.actions.Click;
-
-import static co.com.udea.certificacion.taller.orangehrm.userinterfaces.AddEmployeePage.SAVE_BUTTON;
 
 /**
  * Camino de excepcion: llena el formulario y guarda, pero NO espera la pagina de detalles
@@ -28,8 +25,7 @@ public class TryToCreateEmployee implements Task {
         actor.attemptsTo(
                 FillEmployeeForm.with(employee),
                 FillLoginDetails.with(employee),
-                Click.on(SAVE_BUTTON));
-        WaitLittleBitTime.waitLittleBitTime();
+                SaveTheEmployee.information());
     }
 
     public static TryToCreateEmployee withTheInformationOf(Employee employee) {
