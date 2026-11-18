@@ -18,12 +18,12 @@ import co.com.udea.certificacion.taller.orangehrm.questions.LoginAlertMessage;
 import co.com.udea.certificacion.taller.orangehrm.questions.RequiredFieldMessage;
 import co.com.udea.certificacion.taller.orangehrm.tasks.LogOut;
 import co.com.udea.certificacion.taller.orangehrm.tasks.TryToLogIn;
+import co.com.udea.certificacion.taller.orangehrm.utils.UniqueData;
 import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static org.hamcrest.Matchers.allOf;
@@ -81,9 +81,9 @@ public class OrangeHrmStepDefinition {
 
     @DataTableType
     public Employee employeeEntry(Map<String, String> entry) {
-        String uniqueUsername = entry.get("username") + ThreadLocalRandom.current().nextInt(1000, 9999);
-        return new Employee(entry.get("firstName"), entry.get("middleName"), entry.get("lastName"),
-                uniqueUsername, entry.get("password"));
+        return new Employee(entry.get("firstName"), entry.get("middleName"),
+                UniqueData.withTimestamp(entry.get("lastName")), UniqueData.employeeId(),
+                UniqueData.withTimestamp(entry.get("username")), entry.get("password"));
     }
 
     @Given("she is on the Add Employee form")

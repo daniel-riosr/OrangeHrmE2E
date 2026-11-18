@@ -11,6 +11,9 @@ public class AddEmployeePage {
             .located(By.name("middleName"));
     public static final Target LAST_NAME_INPUT = Target.the("last name input")
             .located(By.name("lastName"));
+    public static final Target EMPLOYEE_ID_INPUT = Target.the("employee id input")
+            .located(By.xpath("//label[normalize-space()='Employee Id']"
+                    + "/ancestor::div[contains(@class,'oxd-input-group')]//input"));
     public static final Target CREATE_LOGIN_TOGGLE = Target.the("create login details toggle")
             .located(By.xpath("//span[contains(@class,'oxd-switch-input')]"));
     public static final Target USERNAME_INPUT = Target.the("username input")

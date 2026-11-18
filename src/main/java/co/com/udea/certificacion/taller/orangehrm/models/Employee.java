@@ -9,6 +9,7 @@ public class Employee {
     private final String firstName;
     private final String middleName;
     private final String lastName;
+    private final String employeeId;
     private final String username;
     private final String password;
 }
